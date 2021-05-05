@@ -1,22 +1,21 @@
 <template>
   <div>
     <v-toolbar color="#16a085" dark class="ma-4 mb-0">
-      <span class="subheading">Quản lý sản phẩm</span>
+      <span class="subheading">Quản danh mục</span>
 
       <v-spacer></v-spacer>
-
       <v-toolbar-items class="hidden-sm-and-down">
         <v-text-field
           v-model="search"
           append-icon="mdi-magnify"
           label="Search"
-          single-line
+         
           hide-details
         ></v-text-field>
-        <!-- <addProduct idEdit=''/> -->
+        
       <v-dialog v-model="dialog" width="1000">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn text v-bind="attrs" v-on="on"> add Product </v-btn>
+        <v-btn text v-bind="attrs" v-on="on"> Thêm danh mục</v-btn>
       </template>
 
       <v-card>
@@ -26,12 +25,12 @@
             <v-row>
               <v-col cols="12" sm="12">
                 <v-text-field
-                  label="Tên sản phẩm*"
+                  label="Tên danh mục"
                   v-model="name"
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6">
+              <v-col cols="12" sm="6" v-if="category_id!==1">
                 <v-select
                   v-model="category_id"
                   :items="Categories"
@@ -41,47 +40,8 @@
                   hide-details
                   item-text="name"
                   item-value="id"
-                 
                 ></v-select>
               </v-col>
-              <v-col cols="12" sm="6">
-                <v-select
-                  v-model="provider_id"
-                  :hint="`${provider_id.name}, ${provider_id.id}`"
-                  :items="providers"
-                  menu-props="auto"
-                  label="Nhà Cung Cấp"
-                  hide-details
-                  item-text="name"
-                  item-value="id"
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="6" md="6">
-                <v-text-field
-                  label="Gía đề xuất (vnđ)*"
-                  v-model="deal"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" sm="6" md="6">
-                <v-text-field
-                  label="Gía bán (vnđ)*"
-                  v-model="price"
-                  required
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12" sm="6" md="6">
-                <v-file-input
-                  counter
-                  show-size
-                  truncate-length="15"
-                  label="Avatar"
-                  v-model="avatar"
-                ></v-file-input>
-              </v-col>
-
               <v-col cols="12" sm="12">
                 <label for="description">Mô tả sản phẩm</label>
                 <ckeditor
@@ -99,8 +59,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="#2ecc71" @click="dialog = false">Xem Trước </v-btn>
-          <v-btn color="#3498db" @click="addProduct()">Lưu</v-btn>
+         
+          <v-btn color="#3498db" @click="addCategory()">Lưu</v-btn>
           <v-btn color="#e74c3c" @click="cancel()">Hủy</v-btn>
         </v-card-actions>
       </v-card>
@@ -112,13 +72,69 @@
 
     <v-data-table
       :headers="headers"
-      :items="product"
+      :items="Categories"
       :items-per-page="5"
       :search="search"
       class="elevation-1 ma-4 mt-0"
-      show-select
-      :single-select="singleSelect"
+        show-expand
+       :expanded.sync="expanded"
+       
     >
+     <template v-slot:[`item.createdDate`]="{ item }">
+       {{ convertDate(item.createdDate)}}
+      </template>
+      <template v-slot:[`item.Status`]="{ item }">
+        <v-chip
+          class="ma-2"
+          :color="item.status === true ? '#2ecc71' : '#e74c3c'"
+          text-color="white"
+        >
+          {{ item.status === true ? "public" : "private" }}
+        </v-chip>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              color="primary"
+              dark
+              v-bind="attrs"
+              v-on="on"
+              small
+              class="mr-4"
+              @click=" editItem(item)"
+            >
+              mdi-pencil
+            </v-icon>
+          </template>
+          <span>Sửa</span>
+        </v-tooltip>
+
+      
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+      <td :colspan="headers.length">
+       
+
+
+        <v-expansion-panels class="pt-2 pb-2">
+    <v-expansion-panel
+     
+    >
+      <v-expansion-panel-header>
+        Danh sách danh mục con
+      </v-expansion-panel-header>
+      <v-expansion-panel-content>
+       <v-data-table
+       :headers="headers"
+      :items="item.subCategory"
+      :items-per-page="5"
+      :search="search"
+      class="elevation-1 ma-4 mt-0"
+       >
+         <template v-slot:[`item.createdDate`]="{ item }">
+       {{ convertDate(item.createdDate)}}
+      </template>
       <template v-slot:[`item.Status`]="{ item }">
         <v-chip
           class="ma-2"
@@ -180,6 +196,14 @@
           <span>Public</span>
         </v-tooltip>
       </template>
+       </v-data-table>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
+
+
+      </td>
+    </template>
     </v-data-table>
   </div>
 </template>
@@ -194,9 +218,8 @@ export default {
  async beforeCreate() {
     
     this.$store.commit("CHANGE_LOADING", true);
-      this.$store.dispatch("LOAD_CATEGORY",1);
-    this.$store.dispatch("loadAllProduct");
-    await this.$store.dispatch("loadAllProvider");
+      await this.$store.dispatch("LOAD_CATEGORY",1);
+   
     this.$store.commit("CHANGE_LOADING", false);
   },
 
@@ -205,14 +228,13 @@ export default {
 
       // ckeditor
          editor: ClassicEditor,
-      description: "<p>Mô tả sản phẩm.</p>",
+      description: "<p>Mô tả danh mục</p>",
       editorConfig: {
         // The configuration of the editor.
       },
       // xử lý bảng product
-      singleSelect: false,
-      selected: [],
-      list: this.product,
+     
+    
       search: "",
     
       headers: [
@@ -223,34 +245,30 @@ export default {
           value: "id",
         },
         {
-          text: "Tên Sản Phẩm",
+          text: "Tên danh mục",
           align: "start",
           sortable: false,
           value: "name",
         },
-        { text: "Gía Đề Xuất(vnd)", value: "price" },
-        { text: "Gía Đề Bán(vnd)", value: "deal" },
-        { text: "Xếp Hạng(Sao)", value: "rating" },
+        
+        { text: "Ngày Tạo", value: "createdDate" },
+       
         { text: "Trạng Thái", value: "Status", sortable: false },
         { text: "Action", value: "actions" },
+        { text: '', value: 'data-table-expand' }
       ],
-      // xử lý edit sản phẩm.
+      // xử lý edit sản danh mục.
       editedId: -1,
       dialog: false,
 
-      // các thông tin về sản phẩm
-      id: '',
-       category_id: "",
-      provider_id: "",
-      avatar: null,
-      name: "",
-      price: "",
-      deal: "",
-      //
+    
+        id: '',
+        category_id: "",
+        name: "",
     };
   },
   components: {
-    // addProduct,
+   
     ckeditor: CKEditor.component,
 
   },
@@ -260,21 +278,32 @@ export default {
        providers: (state) => state.provider.provider,
        editProduct: (state) => state.product.editProduct,
     }),
-    ...mapState(["loading","Categories"]),
+    ...mapState(["loading","Categories","category"]),
     formTitle()
     {
-      return this.editedId === -1 ? 'Thêm sản phẩm' : 'Chỉnh sửa sản phẩm'
+      return this.editedId === -1 ? 'Thêm danh mục' : 'Chỉnh sửa danh mục'
     }
   },
   methods: {
+    resetData()
+    {
+       this.id= '';
+        this.category_id= "";
+        this.name= "";
+    },
+      convertDate(date)
+    {
+      return new Date(date).toLocaleString();
 
-   //xử lý private ?? public sản phẩm???
+    },
+
+   //xử lý private ?? public danh mục???
 
     async deleteItem(item) {
       let message =
         item.status === true
-          ? "Ngừng phát hành lại sản phẩm ?"
-          : "Phát hành lại sản phẩm ?";
+          ? "Ngừng phát hành danh mục ?"
+          : "Phát hành danh mục";
 
       this.$confirm(message, "Warning", {
         confirmButtonText: "OK",
@@ -283,8 +312,8 @@ export default {
       })
         .then(async () => {
           this.$store.commit("CHANGE_LOADING", true);
-          await this.$store.dispatch("deleteProduct", item.id);
-          await this.$store.dispatch("loadAllProduct");
+           await this.$store.dispatch("updateStatus", item.id);
+          await this.$store.dispatch("LOAD_CATEGORY",1);
           console.log(item.id);
           this.$message({
             type: "success",
@@ -298,14 +327,10 @@ export default {
         });
     },
     
-    //thêm sản phẩm
-      async addProduct() {
+    //thêm category
+      async addCategory() {
       if (
         this.category_id === "" ||
-        this.provider_id === "" ||
-        this.price === "" ||
-        this.deal === "" ||
-        // this.avatar === null||
         this.name===""
       ) {
         this.$notify({
@@ -314,65 +339,39 @@ export default {
           type: "warning",
         });
       } else {
-        
-        this.$store.commit("CHANGE_LOADING", true);
-        var product ;
-     
-        if( this.editedId===-1)
-        {
-          product = {
-          name: this.name,
-          deal: this.deal,
-          Price: this.price,
-          description: this.description,
-          };
-        }
-        else{
-          product = {
-          id: this.editedId,
-          name: this.name,
-          deal: this.deal,
-          Price: this.price,
-          description: this.description,
-         };
-        }
-      
-        var formData = new FormData();
-        formData.append("file", this.avatar);
-        formData.append("product", JSON.stringify(product));
-        var data = {
-          formData: formData,
-          category_id: this.category_id,
-          provider_id: this.provider_id,
-        };
-      console.log(product);
         try {
-          await this.$store.dispatch("addProduct", data);
-          this.$store.dispatch("loadAllProduct");
-
-          this.$notify({
+          this.$store.commit("CHANGE_LOADING", true);
+        await this.$store.dispatch('saveCategory',{
+          id: this.id,
+          name: this.name,
+          description: this.description,
+          id_parent:{
+            id: this.category_id
+          }
+        
+        });
+         await this.$store.dispatch("LOAD_CATEGORY",1);
+   
+         this.$notify({
             title: "Success",
             message: this.editedId===-1 ? "Thêm thành công" : "Cập Nhập Thành Công",
             type: "success",
           });
-          
         } catch (error) {
-          console.log(error);
-          this.$notify({
-            title: "Success",
-            message: "Thêm thất bại",
-            type: "error",
-          });
-        } finally {
-        this.category_id = "";
-        this.provider_id ='';
-        this.price ='';
-        this.deal ='';
-        this.avatar =null;
-        this.dialog = false;
-       
-        this.$store.commit("CHANGE_LOADING", false);
+           this.$notify({
+          title: "Error",
+          message: "Thêm danh mục thất bại",
+          type: "error",
+        });
         }
+        finally{
+          this.dialog = false;
+           this.$store.commit("CHANGE_LOADING", false);
+           resetData();
+        }
+        
+        
+       
       }
     },
     cancel()
@@ -384,36 +383,30 @@ export default {
           type: 'warning'
         }).then(() => {
            this.dialog = false;
-          this.category_id = "";
-        this.provider_id ="";
-        this.price ="";
-        this.deal ="";
-        this.avatar =null;
-        this.name="";
-       
+          this.category_id = "",
         this.editedId =-1;
         }).catch(() => {
           // this.$message({
           //   type: 'info',
           //   message: 'Delete canceled'
-          // });          
+          // });   ;       
         });
     },
 
     // xử lý sửa sản phẩm
      async editItem(item) {
-         this.$store.commit("CHANGE_LOADING", true);
+      this.$store.commit("CHANGE_LOADING", true);
        this.editedId = item.id;
        
-       await this.$store.dispatch('loadDetailProduct',item.id);
+       await this.$store.dispatch('loadCategory',item.id);
        console.log(this.editProduct);
-        this.name = this.editProduct.name;
-        this.deal = this.editProduct.deal;
-        this.price = this.editProduct.price;
-        this.description = this.editProduct.description;
-           this.category_id=this.editProduct.categories.id;      
-           this.provider_id = this.editProduct.provider.id,
-          
+       this.id =  item.id;
+      this.name = this.category.name;
+        this.description = this.category.description;      
+  
+      this.category_id=this.category.id_parent.id;
+        
+        
         this.$store.commit("CHANGE_LOADING", false);
         this.dialog = true;
         
@@ -428,11 +421,13 @@ export default {
       {
         this.editedId =-1;
         this.category_id = "";
-        this.provider_id ="";
-        this.price ="";
+      
+        
+        
         this.deal ="";
         this.name="";
-        this.avatar =null;
+        
+
         
       }
        

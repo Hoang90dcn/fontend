@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on, attrs }">
       <v-btn text dark v-bind="attrs" v-on="on">
         <span
-          class="font-weight-light custom-transform-class text-none caption white--text"
+          class="font-weight-light custom-transform-class text-none caption green--text"
           >Đăng Ký
         </span>
       </v-btn>
@@ -115,8 +115,11 @@ export default {
   data() {
     return {
       dialog: false,
-      username: null,
-      password: null,
+      username: '',
+      password: '',
+      account: '',
+      email: '',
+      phone: '',
     };
   },
   methods: {

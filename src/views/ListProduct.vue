@@ -4,7 +4,7 @@
             <v-col class="col-12 pa-2">
               <img
                 width="100%"
-                src="https://salt.tikicdn.com/cache/w885/ts/banner/34/21/bb/1d869d0922c453d6ee938253dcb3a871.png"
+                src="https://adminbeauty.hvnet.vn/Upload/Files/banner/happy-day-beauty-garden.jpg?width=1170&height=450&v=15042020"
                 alt=""
               />
             </v-col>
@@ -16,7 +16,7 @@
               >
                 <img
                   width="100%"
-                  src="https://salt.tikicdn.com/ts/categoryblock/51/72/3f/ec09eb1e7022d1eccc2a9f4f847f6577.jpg"
+                  src="https://salt.tikicdn.com/ts/banner/23/34/09/778dfd71e6013949628f2963c6ebe3b3.png"
                   alt=""
                 />
               </a>
@@ -28,7 +28,7 @@
               >
                 <img
                   width="100%"
-                  src="https://salt.tikicdn.com/ts/categoryblock/b2/33/91/77464daad9b1c45a5293e194f90ccebc.jpg"
+                  src="https://salt.tikicdn.com/ts/banner/5f/4b/01/963a3b1aa3a7acf9c75909cfa7e39055.png"
                   alt=""
                 />
               </a>
@@ -36,7 +36,8 @@
           </v-row>
 
           <v-row>
-            <router-link 
+          <v-container>
+            <v-row>  <router-link 
             v-for="item in productSearch.content"
               v-bind:key="item.id"
               :to="'/detail/'+item.id"
@@ -81,7 +82,8 @@
                   </v-card-text>
                 </v-card>
               </v-hover>
-            </router-link>
+            </router-link></v-row>
+          </v-container>
             
           </v-row>
          <v-container>
@@ -121,6 +123,8 @@ export default {
   if(this.$route.params.type=="search")
   {
    
+   console.log( this.$route.params.key);
+   console.log(this.$route.params.page);
       this.$store.commit('SEARCH_KEY',{
         "key": this.$route.params.key,
         "page": this.$route.params.page

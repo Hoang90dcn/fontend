@@ -13,6 +13,22 @@ export function getInfo() {
     return request({
         url: 'info-user',
         method: 'get',
+    })
+}
 
+export function getAllUsers() {
+    return request({
+        url: 'find-all-user',
+        method: 'GET',
+    })
+}
+export function updateStatusUser(id) {
+    return request({
+        url: 'update-status',
+        method: 'PUT',
+        params: {
+            id: id,
+
+        }
     })
 }

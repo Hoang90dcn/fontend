@@ -97,11 +97,11 @@ export default {
             drawer: false,
             listNavigation: [
                 {id: 1, name: "Dashboard",icon: "mdi-view-dashboard", link: {  name: 'Dashboard'}},
-                {id: 2, name: "Product", icon: "mdi-alpha-p-box-outline", link: {name: 'Product'}},
+                {id: 2, name: "Quản lý sản phẩm", icon: "mdi-alpha-p-box-outline", link: {name: 'Product'}},
                 {id: 3, name: "News", icon: "mdi-newspaper", link: "/news"},
-                {id: 4, name: "Category", icon: "mdi-alpha-c-box-outline", link: "admin/categories"},
-                {id: 5, name: "Cart",  icon: "mdi-account-cash", link: { name: 'CartAdmin'}},
-                {id: 6, name: "Account", icon: "mdi-account-multiple-check", link: "/Acount"}
+                {id: 4, name: "Quản lý danh mục", icon: "mdi-alpha-c-box-outline", link:{name: 'ManageCategories'}},
+                {id: 5, name: "Quản lý giỏ hàng",  icon: "mdi-account-cash", link: { name: 'CartAdmin'}},
+                {id: 6, name: "Quản lý tài khoản", icon: "mdi-account-multiple-check", link: { name: 'ManageAccount'}}
             ],
         }
     }

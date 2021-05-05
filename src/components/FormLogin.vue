@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-model="dialog" width="510">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn text dark v-bind="attrs" v-on="on" @click="open">
+      <v-btn text  dark v-bind="attrs" v-on="on" @click="open">
         <span
-          class="font-weight-light custom-transform-class text-none caption white--text"
+          class="font-weight-light custom-transform-class text-none caption green--text"
           >Đăng Nhập
         </span>
       </v-btn>

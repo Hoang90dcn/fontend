@@ -3,7 +3,8 @@ import Vuex from 'vuex'
 import { axios } from './utils/axios'
 import { moduleProvider } from './modules/provider'
 import { moduleCart } from './modules/cart'
-import { postComment } from './api/comment'
+import { loadCategories, saveCategoryApi, loadCategory, updateStatus } from './api/category'
+import { getAllUsers, updateStatusUser } from './api/users'
 import { moduleProduct } from './modules/product'
 import { moduleComment } from './modules/comment'
 import { moduleUser } from './modules/user'
@@ -17,10 +18,10 @@ const store = new Vuex.Store({
     state: {
 
         Categories: [],
+        category: '',
         productSearch: {},
-        numberProduct: 0,
         loading: false,
-
+        users: '',
 
 
 
@@ -37,28 +38,26 @@ const store = new Vuex.Store({
         CHANGE_LOADING(state, loading) {
             state.loading = loading;
         },
+        SET_USERS(state, users) {
+            console.log(users);
+            state.users = users;
 
-
-        //     }
-        // },
-        // SEARCH_KEY(state, ob) {
-        //     const URL = "http://localhost:9000/api/test3?key=" + ob.key + "&page=" + ob.page;
-        //     const axios = require("axios").default;
-        //     axios.get(URL).then((response) => {
-
-        //         state.productSearch = response.data;
-
-        //     });
-
-
-        // },
-        LOAD_CARTEGORY(state, ob) {
-            const URL = "http://localhost:9000/api/find-all-by-category?id_category=" + ob.key + "&page=" + ob.page;
-            axios.get(URL).then((response) => {
-                state.productSearch = response.data;
-            });
-            console.log(URL);
         },
+
+
+
+        SEARCH_KEY(state, ob) {
+            const URL = "http://localhost:9000/api/test3?key=" + ob.key + "&page=" + ob.page;
+            const axios = require("axios").default;
+            axios.get(URL).then((response) => {
+
+                state.productSearch = response.data;
+
+            });
+
+
+        },
+
         ADD_COMMENT(state, ob) {
 
             postComment({ "content": ob.content }, ob.id_product);
@@ -67,14 +66,7 @@ const store = new Vuex.Store({
 
         },
 
-        GET_NEW_CART(state) {
-            const URL = "http://localhost:9000/api/find-all-new-cart?page=0";
 
-            axios.get(URL).then((response) => {
-                state.cart = response.data
-
-            });
-        },
         loadAllProduct(state) {
             const URL = "http://localhost:9000/api/admin/find-all-product";
             axios.get(URL).then((response) => {
@@ -93,42 +85,127 @@ const store = new Vuex.Store({
 
         GET_ID_CATEGORY(state, id) {
             const URL = "http://localhost:9000/api/get-id-catgory?id=1";
-
             axios.get(URL).then((response) => (state.id = response.data.id));
+            return new Promise((resolve, reject) => {
+                loadCategories(id).then(response => {
+                    console.log(response)
+                    commit('CHANGE_DISTRICT', response);
+
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
 
         },
-
-
-
-
-        DELETE_PRODUCT(state, id_product) {
-            console.log(id_product)
-
-
-
-            const URL = "http://localhost:9000/api/delete-product/" + id_product;
-            axios.delete(URL)
-                .then(response => {
-                    alert("Xóa Thành Thành Công");
-                })
-                .catch(e => {
-                    alert("Xóa Thất Bại !!!");
-                })
+        CHANGE_CATEGORY(state, categories) {
+            console.log(categories);
+            state.Categories = categories;
         },
         SET_TOKEN: (state, token) => {
             state.token = token
         },
-
+        LOAD_CARTEGORY(state, ob) {
+            const URL = "http://localhost:9000/api/find-all-by-category?id_category=" + ob.key + "&page=" + ob.page;
+            axios.get(URL).then((response) => {
+                state.productSearch = response.data;
+            });
+            console.log(URL);
+        },
+        CHANGE_CATEGORY1(state, category) {
+            console.log(category);
+            state.category = category;
+        }
     },
     actions: {
 
-        addItem(context, ob) {
-            context.commit("ADD_Item", ob);
-        },
-        getNumerItem(context) {
-            context.commit("Get_Item");
-        },
 
+
+        LOAD_CATEGORY({ commit }, id) {
+
+            return new Promise((resolve, reject) => {
+                loadCategories(id).then(response => {
+
+
+                    response.forEach(element => {
+                        console.log(element.id);
+                        loadCategories(element.id).then(res => {
+                            var newElement = Object.assign({}, element, {
+                                subCategory: res,
+                            })
+                            Vue.set(response, response.indexOf(element), newElement)
+                        })
+
+
+                    });
+
+                    commit('CHANGE_CATEGORY', response);
+
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+
+        },
+        saveCategory({ commit }, data) {
+            console.log(data);
+            return new Promise((resolve, reject) => {
+                saveCategoryApi(data).then(response => {
+                    console.log(response);
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+        //updateStatus
+        loadCategory({ commit }, id) {
+            return new Promise((resolve, reject) => {
+                loadCategory(id).then(response => {
+                    console.log(response);
+                    commit('CHANGE_CATEGORY1', response);
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+
+        },
+        updateStatus({ commit }, id) {
+            return new Promise((resolve, reject) => {
+                updateStatus(id).then(response => {
+                    console.log(response);
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+
+        },
+        getAllUsers({ commit }) {
+            return new Promise((resolve, reject) => {
+                getAllUsers().then(response => {
+                    const { data } = response
+                    commit('SET_USERS', response);
+                    console.log(response);
+                    resolve(data)
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+        updateStatusUser({ commit }, id) {
+            return new Promise((resolve, reject) => {
+                updateStatusUser(id).then(response => {
+
+                    console.log(response);
+                    resolve(data)
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        }
     },
     modules: {
         provider: moduleProvider,

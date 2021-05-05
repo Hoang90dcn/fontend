@@ -114,7 +114,7 @@ export default {
     {
     
       // this.$router.push("/Check-Out")
-       if( this.user.token=== '')
+       if( this.user.token===null)
      {
        console.log(this.user.token)
          this.$message({
@@ -124,6 +124,7 @@ export default {
          this.$store.commit('CHANGE_LOGIN',true);
      }
      else{
+       console.log(this.user.token)
        this.$router.push("/Check-Out")
      }
     },

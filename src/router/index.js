@@ -16,6 +16,8 @@ import Header from '../components/ComHeader.vue'
 import HeaderAdmin from '../components/Admin/HeaderAdmin.vue'
 import CartAdmin from '../views/Admin/Cart.vue'
 import Dashboard from '../views/Admin/Dashboard.vue'
+import ManageCategories from '../views/Admin/Category.vue'
+import Account from '../views/Admin/Account.vue'
 import { Message } from 'element-ui'
 import { store } from '../store/store'
 Vue.use(VueRouter)
@@ -97,6 +99,17 @@ const routes = [
                 path: 'manager-cart',
                 name: 'CartAdmin',
                 component: CartAdmin
+            },
+            {
+                path: 'manager-categories',
+                name: 'ManageCategories',
+                component: ManageCategories
+            },
+            //Account
+            {
+                path: 'manager-account',
+                name: 'ManageAccount',
+                component: Account
             },
         ]
     },

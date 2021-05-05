@@ -10,7 +10,7 @@
     <v-row>
       <v-col class="col-9">
         <div class="styles__Left">
-          <v-radio-group v-model="shipping" >
+          <v-radio-group v-model="shipping">
             <v-radio
               checked="checked"
               label=" Giao Trong 2h-3h sau khi đặt hàng"
@@ -63,15 +63,16 @@
           <v-container>
             <v-row style="text-align: center">
               <v-col class="col-4"><h5 class="pt-6">Họ Tên</h5></v-col>
-              <v-col class="col-8">
-                <v-text-field v-model="firstname" label="Họ Tên"></v-text-field>
+
+              <v-col style="text-align: left" class="col-8 pt-6">
+                {{ user.name }}
               </v-col>
             </v-row>
 
             <v-row style="text-align: center">
               <v-col class="col-4"><h5 class="pt-6">Số điện thoại</h5></v-col>
-              <v-col class="col-8">
-                <v-text-field v-model="firstname" label="Số điện thoại"></v-text-field>
+              <v-col style="text-align: left" class="col-8 pt-6">
+                {{ user.phone }}
               </v-col>
             </v-row>
 
@@ -87,7 +88,7 @@
                   item-text="name"
                   item-value="id"
                   single-line
-                   @change="selectCity()"
+                  @change="selectCity()"
                 ></v-select>
               </v-col>
             </v-row>
@@ -96,7 +97,6 @@
               <v-col class="col-4"><h5 class="pt-6">Quận/huyện</h5></v-col>
               <v-col class="col-8">
                 <v-select
-               
                   v-model="district"
                   :items="districts"
                   menu-props="auto"
@@ -105,7 +105,7 @@
                   single-line
                   item-text="name"
                   item-value="id"
-                 @change="selectDistrict()"
+                  @change="selectDistrict()"
                 ></v-select>
               </v-col>
             </v-row>
@@ -128,7 +128,11 @@
             <v-row style="text-align: center">
               <v-col class="col-4"><h5 class="pt-1">Điạ Chỉ</h5></v-col>
               <v-col class="col-8">
-                <v-textarea color="black" label="Địa chỉ cụ thể"></v-textarea>
+                <v-textarea
+                  v-model="address"
+                  color="black"
+                  label="Địa chỉ cụ thể"
+                ></v-textarea>
               </v-col>
             </v-row>
           </v-container>
@@ -146,53 +150,65 @@ export default {
   data() {
     return {
       shipping: 0,
-      address: "Haf noi",
-      city: '',
-      district: '',
-      ward: '',
-        turnOnDistrict: false,
+      address: "",
+      city: "",
+      district: "",
+      ward: "",
+      turnOnDistrict: false,
     };
   },
-   async created() {
+  async created() {
     this.loading = true;
-    await this.$store.dispatch('getAllCity',1);
-     this.loading = false;
+    await this.$store.dispatch("getAllCity", 1);
+    this.loading = false;
   },
   computed: {
-    ...mapState(["numberProduct","loading"]),
+    ...mapState(["numberProduct", "loading"]),
     ...mapState({
       cart: (state) => state.cart.cart,
-      cities: state=>state.address.city,
-      districts: state=>state.address.district,
-      wards: state=>state.address.wards,
+      cities: (state) => state.address.city,
+      districts: (state) => state.address.district,
+      wards: (state) => state.address.wards,
+      user: (state) => state.user,
     }),
   },
   methods: {
     async addCart() {
-      // if (this.shipping == null) {
-      //   alert("Bạn phải chọn hình thức giao hàng");
-      //   return;
-      // }
-      // if (this.address == null) {
-      //   alert("Bạn điền địa chỉ nhận hàng");
-      //   return;
-      // }
-      //this.$store.commit("SAVE_CART")
-      //this.$router.push("/");
-      this.$store.commit('CHANGE_LOADING',true);
-      await this.$store.dispatch('saveCart');
-       this.$store.commit('CHANGE_LOADING',false);
-       this.$router.push("/");
-
+      if (this.shipping == 0) {
+        
+        this.$notify({
+          title: 'Warning',
+          message: 'Bạn phải chọn hình thức giao hàng"',
+          type: 'warning'
+        });
+      } else {
+        if (this.address === "") {
+         
+          this.$notify({
+          title: 'Warning',
+          message: 'Bạn chưa chọn địa chỉ giao hàng',
+          type: 'warning'
+        });
+        }
+        else{
+          console.log(this.city);
+          console.log(this.districts);
+          console.log(this.ward);
+          console.log(this.address);
+          this.$store.commit("CHANGE_LOADING", true);
+          this.$store.commit("CHANGE_ADDRESS", this.address);
+          await this.$store.dispatch("saveCart");
+          this.$store.commit("CHANGE_LOADING", false);
+          this.$router.push("/");
+        }
+      }
     },
-    selectCity()
-    {
-       this.$store.dispatch('getAllDistrict',this.city);
+    selectCity() {
+      this.$store.dispatch("getAllDistrict", this.city);
     },
-    selectDistrict()
-    {
-      this.$store.dispatch('getAllWards',this.district);
-    }
+    selectDistrict() {
+      this.$store.dispatch("getAllWards", this.district);
+    },
   },
 };
 </script>

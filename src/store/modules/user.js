@@ -1,5 +1,5 @@
-import { login, getInfo } from '../api/users'
-import { setToken, getToken, removeToken } from '../utils/auth'
+import { login, getInfo, getAllUsers } from '../api/users'
+import { setToken, getToken, removeToken, } from '../utils/auth'
 
 //getInfo
 //, setToken, removeToken
@@ -10,10 +10,17 @@ const moduleUser = {
         name: '',
         avatar: '',
         introduction: '',
-        roles: []
+        roles: [],
+        email: '',
+        phone: '',
 
     }),
     mutations: {
+
+        SET_PHONE: (state, phone) => {
+            state.phone = phone;
+
+        },
         SET_TOKEN: (state, token) => {
             state.token = token
 
@@ -30,7 +37,8 @@ const moduleUser = {
         },
         SET_ROLES: (state, roles) => {
             state.roles = roles
-        }
+        },
+
     },
     actions: {
         login({ commit }, userInfo) {
@@ -60,6 +68,7 @@ const moduleUser = {
                 getInfo().then(response => {
                     const { data } = response
                     commit('SET_NAME', response.fullname);
+                    commit('SET_PHONE', response.phone);
                     resolve(data)
                 }).catch(error => {
                     reject(error)
@@ -69,7 +78,8 @@ const moduleUser = {
         logout({ commit }) {
             removeToken();
             commit('SET_TOKEN', '')
-        }
+        },
+
 
     },
     getters: {

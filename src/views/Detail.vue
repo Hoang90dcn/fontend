@@ -8,7 +8,7 @@
               <img
                 width="100%"
                 height="400px"
-                v-bind:src="'http://localhost:9000/files/' + chiTiet.avatar"
+                 :src="'http://localhost:9000/files/'+chiTiet.avatar"
                 alt=""
               />
             </v-col>
@@ -202,7 +202,7 @@ export default {
     }),
   },
   created() {
-    const URL = "http://localhost:9000/api/find-one/" + this.$route.params.id;
+    const URL = "http://localhost:9000/api/find-one?product_id=" + this.$route.params.id;
     const axios = require("axios").default;
     axios.get(URL).then((response) => (this.chiTiet = response.data));
     this.$store.dispatch("getComment", {

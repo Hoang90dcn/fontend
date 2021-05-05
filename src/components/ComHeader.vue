@@ -1,6 +1,58 @@
 <template>
-  <nav>
-    <v-toolbar color="green" height="60">
+  <nav class="pr-13 pl-13 mt-2" >
+    <v-toolbar color="white" 
+     elevation="0"
+     >
+     <div class="input_search">
+        <input
+                  type="text"
+                  class="font-weight-light custom-transform-class text-none caption green--text"
+                  v-model="key"
+                  placeholder="Nhập tên sản phẩm"
+                />
+                <v-btn text @click="serachByKey">
+                  <v-icon left color="rgb(253, 216, 53)"> mdi-magnify </v-icon>
+                  <span
+                    class="font-weight-light custom-transform-class text-none caption"
+                    >Tìm Kiếm</span
+                  >
+                </v-btn>
+     </div>
+     <v-spacer></v-spacer>
+      <span class="subheading">Quản lý sản phẩm</span>
+     <v-spacer></v-spacer>
+    <span v-if="!user.token">
+                <FormLogin/>
+            <FormResignter/>
+            </span>
+            
+            <span v-else text>
+              <v-btn  text class="ml-4 input_search" >
+                <span  class="font-weight-light custom-transform-class text-none caption green--text ">
+                   Xin Chào {{user.name}}
+                  </span>
+                  </v-btn>
+                <v-btn text class="ml-4 input_search" @click="logout()">
+                  <span class="font-weight-light custom-transform-class text-none caption green--text">
+                Logout
+              </span>
+                </v-btn>
+          
+            </span>
+       <v-btn text class="ml-4" outlined to="/cart">
+                <v-icon left color="rgb(253, 216, 53)">
+                  mdi-cart-arrow-right
+                </v-icon>
+                <span
+                  class="font-weight-light custom-transform-class text-none caption green--text"
+                >
+                  Gio Hàng <span>{{ cart.cart.length }}</span>
+                </span>
+              </v-btn>
+
+      
+    </v-toolbar>
+    <!-- <v-toolbar color="green" height="60">
       <v-toolbar-title>
         <v-container fluid>
           <v-layout row class="pt-2">
@@ -92,8 +144,9 @@
           </v-layout>
         </v-container>
       </v-toolbar-title>
-    </v-toolbar>
+    </v-toolbar> -->
   </nav>
+  
 </template>
 
 <script>
@@ -122,7 +175,8 @@ export default {
     serachByKey: function () {
       console.log(this.key);
 
-      this.$router.push("/list/search");
+        //this.$router.push("/list/search/kem dưỡng/0");
+        this.$router.push({name: 'ListProduct', params:{type :'search', key: this.key, page: 0}});
     },
     logout: function()
     {
@@ -168,11 +222,14 @@ export default {
 .inputSearch {
   width: 340px;
   border-radius: 5px;
-  background: white;
+  color: black;
   outline: none;
   font-size: 13px;
 }
 .image_logo {
   margin-right: 20px;
+}
+.input_search{
+  border: 1px solid #eee;
 }
 </style>

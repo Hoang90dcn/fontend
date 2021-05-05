@@ -2,7 +2,7 @@
   <div class="home" style="background: #f2f2f2"
     
   >
-    <v-container v-loading="loading">
+    <v-container v-loading="loading" class="pt-0">
       <div class="row ma-0">
         <!-- menu -->
         <div class="col-3 pa-0">
@@ -115,7 +115,7 @@
       </v-row>
       <v-row class="f1" style="background: rgb(251 248 248)">
         <a
-          href="/list/category/1/0"
+          href="/list/category/2/0"
           style="
             display: inline-block;
             border-radius: 5px;

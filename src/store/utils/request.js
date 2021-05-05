@@ -80,7 +80,7 @@ service.interceptors.response.use(
             //     type: 'error',
             //     duration: 5 * 1000
             // })
-        alert(error);
+            //alert(error);
         return Promise.reject(error)
     }
 )
