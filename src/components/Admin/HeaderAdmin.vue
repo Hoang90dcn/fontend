@@ -101,7 +101,8 @@ export default {
                 {id: 3, name: "News", icon: "mdi-newspaper", link: "/news"},
                 {id: 4, name: "Quản lý danh mục", icon: "mdi-alpha-c-box-outline", link:{name: 'ManageCategories'}},
                 {id: 5, name: "Quản lý giỏ hàng",  icon: "mdi-account-cash", link: { name: 'CartAdmin'}},
-                {id: 6, name: "Quản lý tài khoản", icon: "mdi-account-multiple-check", link: { name: 'ManageAccount'}}
+                {id: 6, name: "Quản lý tài khoản", icon: "mdi-account-multiple-check", link: { name: 'ManageAccount'}},
+                {id: 7, name: "Quản lý quảng cáo", icon: "mdi-book-settings", link: { name: 'Advertisement'}}
             ],
         }
     }

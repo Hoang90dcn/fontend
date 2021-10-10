@@ -9,6 +9,7 @@ import HomeAdmin from '../views/Admin/HomeAdmin.vue'
 import Product from '../views/Admin/Product.vue'
 import Categories from '../components/Admin/Categories/AddCategories.vue'
 import index from '../views/index.vue'
+
 import FooterAdmin from '../components/Admin/FooterAdmin.vue'
 import Footer from '../components/ComFooter.vue'
 import loginTest from '../components/loginTest.vue'
@@ -18,6 +19,7 @@ import CartAdmin from '../views/Admin/Cart.vue'
 import Dashboard from '../views/Admin/Dashboard.vue'
 import ManageCategories from '../views/Admin/Category.vue'
 import Account from '../views/Admin/Account.vue'
+import Advertisement from '../views/Admin/Advertisement.vue'
 import { Message } from 'element-ui'
 import { store } from '../store/store'
 Vue.use(VueRouter)
@@ -111,6 +113,11 @@ const routes = [
                 name: 'ManageAccount',
                 component: Account
             },
+            {
+                path: 'manager-advertisement',
+                name: 'Advertisement',
+                component: Advertisement
+            }
         ]
     },
     {

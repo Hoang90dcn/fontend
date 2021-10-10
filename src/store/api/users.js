@@ -32,3 +32,19 @@ export function updateStatusUser(id) {
         }
     })
 }
+
+export function getAllRoles() {
+    return request({
+        url: 'get-all-roles',
+        method: 'GET',
+
+    })
+}
+export function updateRoles(data) {
+    return request({
+        url: 'update-role',
+        method: 'POST',
+        data: data,
+
+    })
+}

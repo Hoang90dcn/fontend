@@ -57,7 +57,7 @@
         </div>
 
         <div style="display: flex; padding-top: 29px; padding-right: 47px">
-          <a href="/list/category/1/0">Xem tất cả</a>
+          <a href="/list/category/2/0">Xem tất cả</a>
         </div>
       </div>
       <v-row style="background: rgb(251 248 248)">

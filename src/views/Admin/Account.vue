@@ -6,15 +6,43 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items class="hidden-sm-and-down">
-        <!-- <v-text-field
-          
-          append-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field> -->
-        <!-- <addProduct idEdit=''/> -->
+        <v-dialog v-model="dialog" width="1000">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn text v-bind="attrs" v-on="on"> </v-btn>
+          </template>
 
+          <v-card>
+            <v-card-title class="pa-4">Phân quyền user</v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="3" sm="3"
+                  v-for="item in roles"
+                  :key="item.id"
+                  >
+                    
+                    <v-checkbox
+                      color="#74b9ff"
+                      v-model="selected"
+                      :label="item.name"
+                      :value="item"
+                    ></v-checkbox>
+                    
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              
+              <v-btn color="#3498db" @click="update(item)">Cập Nhật</v-btn>
+              <v-btn color="#e74c3c" @click="cancel()">Hủy</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <v-divider vertical></v-divider>
       </v-toolbar-items>
     </v-toolbar>
@@ -47,39 +75,57 @@
                 </v-chip>
               </td>
               <td>
-                 <v-tooltip top v-if="item.status">
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              color="#e74c3c"
-              small
-              @click="deleteItem(item)"
-              dark
-              v-bind="attrs"
-              v-on="on"
-              class="mr-4"
-            >
-              mdi-delete
-            </v-icon>
-          </template>
-          <span>Chặn</span>
-        </v-tooltip>
+                <span v-if="item.status">
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        color="#e74c3c"
+                        small
+                        @click="deleteItem(item)"
+                        dark
+                        v-bind="attrs"
+                        v-on="on"
+                        class="mr-4"
+                      >
+                        mdi-delete
+                      </v-icon>
+                    </template>
+                    <span>Chặn</span>
+                  </v-tooltip>
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        color="#2ecc71"
+                        small
+                        @click="phanQuyen(item)"
+                        dark
+                        v-bind="attrs"
+                        v-on="on"
+                        class="mr-4"
+                      >
+                        mdi-account-alert-outline
+                      </v-icon>
+                    </template>
+                    <span>Phân Quyền</span>
+                  </v-tooltip>
+                </span>
 
-        <v-tooltip top v-else>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              color="#2ecc71"
-              small
-              @click="deleteItem(item)"
-              dark
-              v-bind="attrs"
-              v-on="on"
-              class="mr-4"
-            >
-              mdi-check
-            </v-icon>
-          </template>
-          <span>Bỏ chặn</span>
-        </v-tooltip>
+                <v-tooltip top v-else>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      color="#2ecc71"
+                      small
+                      @click="deleteItem(item)"
+                      dark
+                      v-bind="attrs"
+                      v-on="on"
+                      class="mr-4"
+                    >
+                      mdi-check
+                    </v-icon>
+                  </template>
+                  <span>Bỏ chặn</span>
+                </v-tooltip>
               </td>
             </tr>
           </tbody>
@@ -91,45 +137,62 @@
 
 <script>
 import { mapState } from "vuex";
-import {} from ''
+
 export default {
   async beforeCreate() {
+    
+  },
+  async created(){
+    this.$store.commit("CHANGE_LOADING", true);
     this.$store.dispatch("getAllUsers");
+    this.$store.dispatch("getAllRoles");
+    this.$store.commit("CHANGE_LOADING", false);
+
   },
 
   data() {
     return {
-      headers: [
-        {
-          text: "ID",
-          align: "center",
-          sortable: false,
-          value: "id",
-        },
-        {
-          text: "Họ tên",
-          align: "start",
-          sortable: false,
-          value: "fullname",
-        },
-        { text: "Email", value: "email", sortable: false },
-        { text: "Số điện thoại", value: "phone", sortable: false },
-        // { text: "Quyền quản trị", value: "rating" },
-        // { text: "Trạng Thái", value: "status", sortable: false },
-        // { text: "Action", value: "actions" },
-      ],
+      dialog: false,
+      checkbox: true,
+      selected: [],
+      userEdit: '',
     };
   },
 
   computed: {
-    ...mapState(["users"]),
+    ...mapState(["users","roles"]),
   },
-  methods:{
-    deleteItem(item)
-    {
+  methods: {
+    async deleteItem(item) {
+      this.$store.commit("CHANGE_LOADING", true);
+      await this.$store.dispatch("updateStatusUser", item.id);
+      await this.$store.dispatch("getAllUsers");
+      this.$store.commit("CHANGE_LOADING", false);
+    },
+    phanQuyen(item) {
+      this.dialog = true;
+      this.selected= item.roles;
+      this.userEdit = item;
 
+    },
+    cancel()
+    {
+      this.dialog = false;
+    },
+    async update(item)
+    {
+      this.userEdit.roles = this.selected;
+       this.$store.commit("CHANGE_LOADING", true);
+      await  this.$store.dispatch("updateRoles",this.userEdit)
+      await this.$store.dispatch("getAllUsers");
+      this.dialog=false;
+      this.$store.commit("CHANGE_LOADING", false);
+     
+      
+     
+      console.log(this.userEdit);
     }
-  }
+  },
 };
 </script>
 <style>

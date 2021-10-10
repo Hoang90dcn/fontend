@@ -4,7 +4,7 @@ import { axios } from './utils/axios'
 import { moduleProvider } from './modules/provider'
 import { moduleCart } from './modules/cart'
 import { loadCategories, saveCategoryApi, loadCategory, updateStatus } from './api/category'
-import { getAllUsers, updateStatusUser } from './api/users'
+import { getAllUsers, updateStatusUser, getAllRoles, updateRoles } from './api/users'
 import { moduleProduct } from './modules/product'
 import { moduleComment } from './modules/comment'
 import { moduleUser } from './modules/user'
@@ -22,6 +22,7 @@ const store = new Vuex.Store({
         productSearch: {},
         loading: false,
         users: '',
+        roles: [],
 
 
 
@@ -115,6 +116,9 @@ const store = new Vuex.Store({
         CHANGE_CATEGORY1(state, category) {
             console.log(category);
             state.category = category;
+        },
+        CHANGE_ROLES(state, roles) {
+            state.roles = roles;
         }
     },
     actions: {
@@ -200,12 +204,39 @@ const store = new Vuex.Store({
                 updateStatusUser(id).then(response => {
 
                     console.log(response);
-                    resolve(data)
+                    resolve(response)
                 }).catch(error => {
                     reject(error)
                 })
             })
-        }
+        },
+        //getAllRoles
+        getAllRoles({ commit }) {
+            return new Promise((resolve, reject) => {
+                getAllRoles().then(response => {
+
+                    console.log(response);
+                    commit("CHANGE_ROLES", response);
+                    resolve(response)
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+        //updateRoles
+        updateRoles({ commit }, data) {
+            return new Promise((resolve, reject) => {
+                updateRoles(data).then(response => {
+
+                    console.log(response);
+
+                    resolve(response)
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+
     },
     modules: {
         provider: moduleProvider,
